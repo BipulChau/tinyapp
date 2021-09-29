@@ -11,18 +11,28 @@
       </div>
       
     </div>
-    <form method="POST" action="/login" class = "form-inline">
+    <% if (!locals.username) {%>
+      <form method="POST" action="/login" class = "form-inline">
       
-      <!-- <label for="username">Login:</label> -->
-      <input
-        class="form-control mr-sn-2"
-        type="text"
-        name="username"
-        placeholder="username"
-        style="width: 300px; margin: 1em"
-      />
-      <button type="submit" class="btn btn-outline-primary">Login</button>
+        <!-- <label for="username">Login:</label> -->
+        <input
+          class="form-control mr-sn-2"
+          type="text"
+          name="username"
+          placeholder="username"
+          style="width: 300px; margin: 1em"
+        />
+        <button type="submit" class="btn btn-outline-primary">Login</button>
+      </form>
+    <%} else{%>
+    
+    <span class="badge badge-warning"><%= username %> </span> 
+    <form method="POST" action="/logout" class = "form-inline">
+      
+      
+      <button type="submit" class="btn btn-outline-dark">Logout</button>
     </form>
-    <span class="badge badge-warning"><%= username %> </span>
+    
+    <%}%>
   </nav>
 </header>

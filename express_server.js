@@ -26,16 +26,18 @@ function generateRandomString() {
   return randomString;
 }
 
-// helper function to check if the value exits or not using it's key
+// helper function to check if the value exits or not using it's key and returning corresponding userid as well
 const checkIfMatched = function (key, value, usersDatabase) {
   for (let user in usersDatabase){
     let userDetails = (usersDatabase[user]);
     // console.log(userDetails['email'])
     if(userDetails[key]=== value){
-  return true;
+      let userIDandResult = {id:user, result: true}
+  return userIDandResult;
     }
   }
-  return false;
+  let userIDandResult = {result: false}
+  return userIDandResult;
   }
 
 
@@ -128,7 +130,7 @@ if (!req.body.email || !req.body.password){
 let email = req.body.email;
 let password = req.body.password;
 
-let userRegistered = checkIfMatched("email",email, users)
+let userRegistered = checkIfMatched("email",email, users).result
 
 // console.log (userRegistered)
 
@@ -173,12 +175,19 @@ app.post("/login", (req, res) => {
 const email = req.body.email
 const password = req.body.password
 
-let userRegistered = checkIfMatched("email", email, users)
+let userRegistered = checkIfMatched("email", email, users).result
 
-console.log (userRegistered)
+//console.log (userRegistered)
 
-if (!userRegistered){
+if (!userRegistered) {
   res.status(403).send("Emaild ID does not match. Please check your email id!");
+  return;
+}
+
+let isPasswordCorrect = checkIfMatched("password", password, users  ).result;
+
+if (!isPasswordCorrect) {
+  res.status(403).send("Password does not match!!!");
   return;
 }
 

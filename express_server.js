@@ -75,6 +75,11 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+app.get("/register", (req, res) => {
+  
+  res.render("urls_register", {username: null});
+});
+
 app.post("/urls/:shortURL/delete", (req, res) => {
   let shortURL = req.params.shortURL;
   delete urlDatabase[shortURL];
@@ -90,7 +95,7 @@ app.post("/urls/:shortURL", (req, res) => {
 
 app.post("/login", (req, res) => {  
 //console.log(req.body.username)
-res.cookie('username', req.body.username)
+  res.cookie('username', req.body.username)
 //console.log (req);
   res.redirect("/urls");
 });

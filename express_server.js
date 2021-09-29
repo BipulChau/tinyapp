@@ -7,7 +7,10 @@ const uuid = require('uuid');
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
+
+//activate cookie parser
 app.use(cookieParser())
+
 app.set("view engine", "ejs");
 
 const PORT = 8080; // default port 8080
@@ -54,7 +57,7 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, username: req.cookies["username"] };
+  const templateVars = { urls: urlDatabase, user_id: req.cookies["user_id"] };
   res.render("urls_index", templateVars);
 });
 
@@ -68,7 +71,7 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  const templateVars = { username: req.cookies["username"] }
+  const templateVars = { user_id: req.cookies["user_id"] }
   res.render("urls_new", templateVars);
 });
 
@@ -77,7 +80,7 @@ app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
-    username: req.cookies["username"] 
+    user_id: req.cookies["user_id"] 
   };
   res.render("urls_show", templateVars);
 });
@@ -94,7 +97,7 @@ app.get("/u/:shortURL", (req, res) => {
 
 app.get("/register", (req, res) => {
   
-  res.render("urls_register", {username: null});
+  res.render("urls_register", {user_id: null});
 });
 
 app.post("/register", (req, res) => {
@@ -132,7 +135,7 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {  
-  res.clearCookie('username', {path:'/'});
+  res.clearCookie('user_id', {path:'/'});
 
   res.redirect("/urls");
 });

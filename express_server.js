@@ -57,7 +57,9 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, user_id: req.cookies["user_id"] };
+  let user_id = req.cookies["user_id"]
+  let user = users[user_id];
+  const templateVars = { urls: urlDatabase, user };
   res.render("urls_index", templateVars);
 });
 
@@ -71,16 +73,20 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  const templateVars = { user_id: req.cookies["user_id"] }
+  let user_id = req.cookies["user_id"]
+  let user = users[user_id];
+  const templateVars = {user}
   res.render("urls_new", templateVars);
 });
 
 
 app.get("/urls/:shortURL", (req, res) => {
+  let user_id = req.cookies["user_id"]
+  let user = users[user_id];
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
-    user_id: req.cookies["user_id"] 
+    user 
   };
   res.render("urls_show", templateVars);
 });
@@ -97,11 +103,16 @@ app.get("/u/:shortURL", (req, res) => {
 
 app.get("/register", (req, res) => {
   
-  res.render("urls_register", {user_id: null});
+  res.render("urls_register", {user: null});
 });
 
 app.post("/register", (req, res) => {
   //console.log(req.body)
+if (!req.body.email || !req.body.password){
+  res.status(400).send("Please fill both email and password!!!");
+  return;
+}
+
   const id = generateRandomString();
   let email = req.body.email;
   let password = req.body.password;

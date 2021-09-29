@@ -160,11 +160,11 @@ app.post("/urls/:shortURL", (req, res) => {
   res.redirect("/urls");
 });
 
-app.post("/login", (req, res) => {  
+app.get("/login", (req, res) => {  
 //console.log(req.body.username)
-  res.cookie('username', req.body.username)
+  //res.cookie('username', req.body.username)
 //console.log (req);
-  res.redirect("/urls");
+  res.render("urls_login", {user:null});
 });
 
 app.post("/logout", (req, res) => {  

@@ -125,6 +125,11 @@ if (!req.body.email || !req.body.password){
   return;
 }
 
+if (checkIfRegistered){
+  res.status(400).send("Already registered with this email id");
+  return;
+}
+
   const id = generateRandomString();
   let email = req.body.email;
   let password = req.body.password;

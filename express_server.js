@@ -15,7 +15,7 @@ app.set("view engine", "ejs");
 
 const PORT = 8080; // default port 8080
 
-//Helper function
+//Helper function to generate random id
 function generateRandomString() {
   const strings = "abcdefghijklmnopqrstuvwxyz0123456789";
   let randomString = "";
@@ -25,6 +25,18 @@ function generateRandomString() {
   }
   return randomString;
 }
+
+// helper function to check if the user is already registered with email
+const checkIfRegistered = function (email, usersDatabase) {
+  for (let user in usersDatabase){
+    let userDetails = (usersDatabase[user]);
+    // console.log(userDetails['email'])
+    if(userDetails['email']){
+  return true;
+    }
+  }
+  return false;
+  }
 
 
 // global urls Database

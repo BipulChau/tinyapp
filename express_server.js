@@ -31,7 +31,7 @@ const checkIfRegistered = function (email, usersDatabase) {
   for (let user in usersDatabase){
     let userDetails = (usersDatabase[user]);
     // console.log(userDetails['email'])
-    if(userDetails['email']){
+    if(userDetails["email"]=== email){
   return true;
     }
   }
@@ -125,14 +125,19 @@ if (!req.body.email || !req.body.password){
   return;
 }
 
-if (checkIfRegistered){
+let email = req.body.email;
+let password = req.body.password;
+
+let userRegistered = checkIfRegistered(email,users)
+
+console.log (userRegistered)
+
+if (userRegistered){
   res.status(400).send("Already registered with this email id");
   return;
 }
 
   const id = generateRandomString();
-  let email = req.body.email;
-  let password = req.body.password;
   users[id] = {id, email, password};
   console.log(users)
   res.cookie('user_id', id)

@@ -8,18 +8,20 @@
       <div class="navbar-nav">
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
-        <form method="POST" action="/login">
-          <!-- <label for="username">Login:</label> -->
-          <input
-            class="form-control"
-            type="text"
-            name="username"
-            placeholder="username"
-            style="width: 300px; margin: 1em"
-          />
-          <button type="submit" l>Login</button>
-        </form>
       </div>
+      
     </div>
+    <form method="POST" action="/login" class = "form-inline">
+      <!-- <label for="username">Login:</label> -->
+      <input
+        class="form-control mr-sn-2"
+        type="text"
+        name="username"
+        placeholder="username"
+        style="width: 300px; margin: 1em"
+      />
+      <button type="submit" class="btn btn-outline-primary">Login</button>
+    </form>
+    <span class="badge badge-warning"><%= username %> </span>
   </nav>
 </header>

@@ -12,18 +12,10 @@
       
     </div>
     <% if (!user) {%>
-      <form method="POST" action="/login" class = "form-inline">
+
+      <a href="/login"class="btn btn-primary">Login</a>
+      <a href="/register" class="btn btn-warning">Register</a>
       
-        <!-- <label for="username">Login:</label> -->
-        <input
-          class="form-control mr-sn-2"
-          type="text"
-          name="username"
-          placeholder="username"
-          style="width: 300px; margin: 1em"
-        />
-        <button type="submit" class="btn btn-outline-primary">Login</button>
-      </form>
     <%} else{%>
     
     <h6>Logged in as: <%= user.email %>!!!</h6>

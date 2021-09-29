@@ -26,12 +26,12 @@ function generateRandomString() {
   return randomString;
 }
 
-// helper function to check if the user is already registered with email
-const checkIfRegistered = function (email, usersDatabase) {
+// helper function to check if the value exits or not using it's key
+const checkIfMatched = function (key, value, usersDatabase) {
   for (let user in usersDatabase){
     let userDetails = (usersDatabase[user]);
     // console.log(userDetails['email'])
-    if(userDetails["email"]=== email){
+    if(userDetails[key]=== value){
   return true;
     }
   }
@@ -128,9 +128,9 @@ if (!req.body.email || !req.body.password){
 let email = req.body.email;
 let password = req.body.password;
 
-let userRegistered = checkIfRegistered(email,users)
+let userRegistered = checkIfMatched("email",email, users)
 
-console.log (userRegistered)
+// console.log (userRegistered)
 
 if (userRegistered){
   res.status(400).send("Already registered with this email id");
@@ -139,11 +139,9 @@ if (userRegistered){
 
   const id = generateRandomString();
   users[id] = {id, email, password};
-  console.log(users)
+  // console.log(users)
   res.cookie('user_id', id)
 
-
-  
   res.redirect("/urls");
 });
 
@@ -167,6 +165,28 @@ app.get("/login", (req, res) => {
   res.render("urls_login", {user:null});
 });
 
+// login - post
+app.post("/login", (req, res) => {  
+//console.log(req.body.username)
+  //res.cookie('username', req.body.username)
+//console.log (req.body);
+const email = req.body.email
+const password = req.body.password
+
+let userRegistered = checkIfMatched("email", email, users)
+
+console.log (userRegistered)
+
+if (!userRegistered){
+  res.status(403).send("Emaild ID does not match. Please check your email id!");
+  return;
+}
+
+
+res.redirect("/urls");
+});
+
+// logout - post
 app.post("/logout", (req, res) => {  
   res.clearCookie('user_id', {path:'/'});
 

@@ -1,9 +1,13 @@
 const express = require("express");
-const app = express();
-const PORT = 8080; // default port 8080
-const bodyParser = require("body-parser");
 const morgan = require("morgan");
+const bodyParser = require("body-parser");
+const cookieParser = require('cookie-parser');
+
+const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser())
+
+const PORT = 8080; // default port 8080
 
 function generateRandomString() {
   const strings = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -78,6 +82,18 @@ app.post("/urls/:shortURL", (req, res) => {
   urlDatabase[shortURL] = req.body.longURL;
   res.redirect("/urls");
 });
+
+app.post("/login", (req, res) => {
+  //console.log('username: ', req.cookies)
+  //res.cookie({username})
+  // var cookie = req.cookies.cookieName;
+console.log(req.body.username)
+res.cookie('username', req.body.username)
+//console.log (req);
+  res.redirect("/urls");
+});
+
+
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);

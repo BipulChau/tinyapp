@@ -196,8 +196,9 @@ if (!req.body.email || !req.body.password){
 }
 
 let email = req.body.email;
-let password = hashedPasswordGenerator(req.body.password);
-//console.log("New user hashed password:", password)
+let password = req.body.password;
+let hashPassword = hashedPasswordGenerator(password);
+console.log("New user password:", password,"\nhashed password:", hashPassword)
 
 let userRegistered = checkIfMatched("email",email, users).result
 
@@ -215,7 +216,7 @@ if (userRegistered){
 
   res.redirect("/urls");
 });
-console.log(urlDatabase)
+//console.log(urlDatabase)
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   let user_id = req.cookies["user_id"]
@@ -248,6 +249,7 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {  
 const email = req.body.email
 const password = req.body.password
+const hashPassword = hashedPasswordGenerator(password);
 
 let userRegistered = checkIfMatched("email", email, users).result
 
@@ -258,7 +260,9 @@ if (!userRegistered) {
   return;
 }
 
-let isPasswordCorrect = checkIfMatched("password", password, users  ).result;
+let isPasswordCorrect = checkIfMatched("password", hashPassword, users  ).result;
+//console.log("password :", password, "\nhashPW: ", hashPassword);
+
 
 if (!isPasswordCorrect) {
   res.status(403).send("Password does not match!!!");

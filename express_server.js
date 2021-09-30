@@ -3,6 +3,10 @@ const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
 const uuid = require('uuid');
+const bcrypt = require('bcryptjs');
+const salt = bcrypt.genSaltSync(10);
+
+
 
 
 const app = express();
@@ -13,7 +17,7 @@ app.use(cookieParser())
 
 app.set("view engine", "ejs");
 
-const PORT = 8080; // default port 8080
+const PORT = 8080; 
 
 //Helper function to generate random id
 function generateRandomString() {
@@ -48,12 +52,26 @@ const dataBaseGenerator = function(key,value, database) {
       
       userDatabase[i] = database[i];
       return userDatabase
-    //const templateVars = { urls: userDatabase, user };
-    //return res.render(urls, templateVars);
+
     }
   }
   }
 
+  //Helper function to generate hashed password
+
+  let hashedPasswordGenerator = function (password) {
+    const hashedPassword = bcrypt.hashSync(password, salt);
+    return hashedPassword;
+  }
+
+
+  //Helper function to check if password and hashed password are the SAME
+  let hashedPasswordChecker = function(password, hashedPassword) {
+    return(bcrypt.compareSync(password, hashedPassword));
+  }
+  
+
+  
 // old global urls Database
 // const urlDatabase = {
 //   b2xVn2: "http://www.lighthouselabs.ca",
@@ -78,14 +96,16 @@ const users = {
   "userRandomID": {
     id: "userRandomID", 
     email: "user@example.com", 
-    password: "purple-monkey-dinosaur"
+    password: hashedPasswordGenerator("purple-monkey-dinosaur")
   },
  "user2RandomID": {
     id: "user2RandomID", 
     email: "user2@example.com", 
-    password: "dishwasher-funk"
+    password: hashedPasswordGenerator("dishwasher-funk")
   }
 }
+
+console.log("hashed password: ", users)
 
 app.get("/", (req, res) => {
   res.send("Hello!");

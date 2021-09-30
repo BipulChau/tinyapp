@@ -26,7 +26,7 @@ function generateRandomString() {
   return randomString;
 }
 
-// helper function to check if the value exits or not using it's key and returning corresponding userid as well
+// helper function to check if the value exits or not using it's key and if matched returns corresponding userid as well 
 const checkIfMatched = function (key, value, usersDatabase) {
   for (let user in usersDatabase){
     let userDetails = (usersDatabase[user]);
@@ -161,17 +161,12 @@ app.post("/urls/:shortURL", (req, res) => {
 });
 
 app.get("/login", (req, res) => {  
-//console.log(req.body.username)
-  //res.cookie('username', req.body.username)
-//console.log (req);
+
   res.render("urls_login", {user:null});
 });
 
 // login - post
 app.post("/login", (req, res) => {  
-//console.log(req.body.username)
-  //res.cookie('username', req.body.username)
-//console.log (req.body);
 const email = req.body.email
 const password = req.body.password
 
@@ -191,14 +186,17 @@ if (!isPasswordCorrect) {
   return;
 }
 
+const id = checkIfMatched("email", email, users).id
+//console.log(user_id);
+res.cookie('user_id', id);
 
 res.redirect("/urls");
 });
 
 // logout - post
 app.post("/logout", (req, res) => {  
-  res.clearCookie('user_id', {path:'/'});
-
+  res.clearCookie('user_id')
+  
   res.redirect("/urls");
 });
 

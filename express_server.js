@@ -40,6 +40,19 @@ const checkIfMatched = function (key, value, usersDatabase) {
   return userIDandResult;
   }
 
+  // Helper function which generates database of individual user based on key, value(used_id) and database
+const dataBaseGenerator = function(key,value, database) {
+  let userDatabase ={}
+  for (let i in database){
+  if(database[i][key] === value){
+      
+      userDatabase[i] = database[i];
+      return userDatabase
+    //const templateVars = { urls: userDatabase, user };
+    //return res.render(urls, templateVars);
+    }
+  }
+  }
 
 // old global urls Database
 // const urlDatabase = {
@@ -89,7 +102,9 @@ app.get("/urls", (req, res) => {
     res.render("urls_promptLogin", {user: null});
     return;
   }
-  const templateVars = { urls: urlDatabase, user };
+
+  let userDatabase = dataBaseGenerator("userID", user_id, urlDatabase)
+  const templateVars = { urls: userDatabase, user };
   res.render("urls_index", templateVars);
 });
 
@@ -122,10 +137,14 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new", templateVars);
 });
 
-
+//console.log(urlDatabase)
 app.get("/urls/:shortURL", (req, res) => {
   let user_id = req.cookies["user_id"]
   let user = users[user_id];
+  if(!user_id){
+    res.render("urls_promptLogin", {user: null});
+    return;
+  }
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL]["longURL"],
@@ -175,12 +194,21 @@ if (userRegistered){
 
   res.redirect("/urls");
 });
+console.log(urlDatabase)
 
 app.post("/urls/:shortURL/delete", (req, res) => {
+  let user_id = req.cookies["user_id"]
+  // let user = users[user_id];
+  if(!user_id){
+    res.send("Not authorized to delete");
+    return;
+  }
   let shortURL = req.params.shortURL;
   delete urlDatabase[shortURL];
   res.redirect("/urls");
 });
+console.log(urlDatabase)
+
 
 app.post("/urls/:shortURL", (req, res) => {
   let shortURL = req.params.shortURL;

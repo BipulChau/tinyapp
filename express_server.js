@@ -31,7 +31,7 @@ function generateRandomString() {
 }
 
 // helper function to check if the value exits or not using it's key and if matched returns corresponding userid as well 
-const checkIfMatched = function (key, value, usersDatabase) {
+const usersDataExtractor = function (key, value, usersDatabase) {
   for (let user in usersDatabase){
     let userDetails = (usersDatabase[user]);
     // console.log(userDetails['email'])
@@ -96,7 +96,7 @@ const users = {
   "userRandomID": {
     id: "userRandomID", 
     email: "user@example.com", 
-    password: hashedPasswordGenerator("purple-monkey-dinosaur")
+    password: hashedPasswordGenerator("apple")
   },
  "user2RandomID": {
     id: "user2RandomID", 
@@ -200,7 +200,7 @@ let password = req.body.password;
 let hashPassword = hashedPasswordGenerator(password);
 console.log("New user password:", password,"\nhashed password:", hashPassword)
 
-let userRegistered = checkIfMatched("email",email, users).result
+let userRegistered = usersDataExtractor("email",email, users).result
 
 // console.log (userRegistered)
 
@@ -249,9 +249,9 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {  
 const email = req.body.email
 const password = req.body.password
-const hashPassword = hashedPasswordGenerator(password);
+//const hashPassword = hashedPasswordGenerator(password);
 
-let userRegistered = checkIfMatched("email", email, users).result
+let userRegistered = usersDataExtractor("email", email, users).result
 
 //console.log (userRegistered)
 
@@ -260,8 +260,11 @@ if (!userRegistered) {
   return;
 }
 
-let isPasswordCorrect = checkIfMatched("password", hashPassword, users  ).result;
-//console.log("password :", password, "\nhashPW: ", hashPassword);
+const savedUserhashPassword = users[usersDataExtractor("email", email, users).id]["password"]
+console.log(savedUserhashPassword)
+let isPasswordCorrect = bcrypt.compareSync(password, savedUserhashPassword)
+
+console.log("password :", password, "\nhashPW: ", savedUserhashPassword);
 
 
 if (!isPasswordCorrect) {
@@ -269,7 +272,7 @@ if (!isPasswordCorrect) {
   return;
 }
 
-const id = checkIfMatched("email", email, users).id
+const id = usersDataExtractor("email", email, users).id
 //console.log(user_id);
 res.cookie('user_id', id);
 

@@ -19,6 +19,18 @@ app.set("view engine", "ejs");
 
 const PORT = 8080; 
 
+//Helper function to find urls created by a user
+const urlsForUser = (id) => {
+  const filteredURLs = {};
+  const keys = Object.keys(urlDatabase);
+  for (let key of keys) {
+    if(urlDatabase[key]["userID"] === id ){
+      filteredURLs[key] = urlDatabase[key];
+    }
+  }
+   return filteredURLs;
+}
+
 //Helper function to generate random id
 function generateRandomString() {
   const strings = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -115,6 +127,20 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
+// app.get("/urls", (req, res) => {
+//   // read the user id from the cookies
+//   const userId = req.cookies['user_id'];
+//   // retrieve the user object from users db
+//   if(!userId) {
+//     res.status(401).send("You must <a href='/login'>Login</a> first");
+//     return
+//   }
+//   //userdatabase needs to pass if it is moved to helper file.
+//   const updatedURLs = urlsForUser(userId);
+//   const currentUser = users[userId];
+//   const templateVars = { urls: updatedURLs, user: currentUser };
+//   res.render("urls_index", templateVars);
+// });
 app.get("/urls", (req, res) => {
   let user_id = req.cookies["user_id"]
   let user = users[user_id];
@@ -123,8 +149,8 @@ app.get("/urls", (req, res) => {
     return;
   }
 
-  let userDatabase = dataBaseGenerator("userID", user_id, urlDatabase)
-  const templateVars = { urls: userDatabase, user };
+  let userURL = urlsForUser(user_id)
+  const templateVars = { urls: userURL, user };
   res.render("urls_index", templateVars);
 });
 

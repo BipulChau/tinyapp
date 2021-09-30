@@ -73,6 +73,10 @@ app.get("/urls.json", (req, res) => {
 app.get("/urls", (req, res) => {
   let user_id = req.cookies["user_id"]
   let user = users[user_id];
+  if(!user_id){
+    res.redirect("/login")
+    return;
+  }
   const templateVars = { urls: urlDatabase, user };
   res.render("urls_index", templateVars);
 });
@@ -89,6 +93,10 @@ app.post("/urls", (req, res) => {
 app.get("/urls/new", (req, res) => {
   let user_id = req.cookies["user_id"]
   let user = users[user_id];
+  if(!user_id){
+    res.redirect("/login")
+    return;
+  }
   const templateVars = {user}
   res.render("urls_new", templateVars);
 });

@@ -97,24 +97,27 @@ app.post("/urls", (req, res) => {
   //console.log(req.body); // Log the POST request body to the console
   //res.send(generateRandomString());         // Respond with 'Ok' (we will replace this)
   let user_id = req.cookies["user_id"]
-  let user = users[user_id];
+  let userID = user_id // to match key with fresh urlDatabase
   if(!user_id){
     res.redirect("/login")
     return;
   }
+  let longURL = req.body.longURL
+  //let user = users[user_id];
   const shortURL = generateRandomString();
-  urlDatabase[shortURL] = req.body.longURL;
+  urlDatabase[shortURL] = {longURL, userID};  // adding new shorturl and corresponding longURL and userID as per fresh urlDatabase structure
   //res.send(urlDatabase);
   res.redirect(`/urls/${shortURL}`);
 });
 
 app.get("/urls/new", (req, res) => {
   let user_id = req.cookies["user_id"]
-  let user = users[user_id];
+  
   if(!user_id){
     res.redirect("/login")
     return;
   }
+  let user = users[user_id];
   const templateVars = {user}
   res.render("urls_new", templateVars);
 });

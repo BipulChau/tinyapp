@@ -128,7 +128,7 @@ app.get("/urls/:shortURL", (req, res) => {
   let user = users[user_id];
   const templateVars = {
     shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL],
+    longURL: urlDatabase[req.params.shortURL]["longURL"],
     user 
   };
   res.render("urls_show", templateVars);

@@ -86,7 +86,7 @@ app.get("/urls", (req, res) => {
   let user_id = req.cookies["user_id"]
   let user = users[user_id];
   if(!user_id){
-    res.redirect("/login")
+    res.render("urls_promptLogin", {user: null});
     return;
   }
   const templateVars = { urls: urlDatabase, user };

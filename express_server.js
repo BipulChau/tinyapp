@@ -196,7 +196,8 @@ if (!req.body.email || !req.body.password){
 }
 
 let email = req.body.email;
-let password = req.body.password;
+let password = hashedPasswordGenerator(req.body.password);
+//console.log("New user hashed password:", password)
 
 let userRegistered = checkIfMatched("email",email, users).result
 

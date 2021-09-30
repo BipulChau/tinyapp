@@ -82,8 +82,14 @@ app.get("/urls", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
+  //console.log(req.body); // Log the POST request body to the console
   //res.send(generateRandomString());         // Respond with 'Ok' (we will replace this)
+  let user_id = req.cookies["user_id"]
+  let user = users[user_id];
+  if(!user_id){
+    res.redirect("/login")
+    return;
+  }
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
   //res.send(urlDatabase);

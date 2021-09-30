@@ -135,12 +135,12 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
-
-  if (!longURL) {
-    res.send("<html><body>Error!!</body></html>\n");
+  if (!urlDatabase[req.params.shortURL]) {
+    //res.send("<html><body>Error!!</body></html>\n");
+    res.status(400).send("Error!!! Please check shortURL")
     return;
   }
+  const longURL = urlDatabase[req.params.shortURL]["longURL"];
   res.redirect(longURL);
 });
 

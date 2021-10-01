@@ -177,9 +177,7 @@ if (userRegistered){
 }
 
   const id = generateRandomString();
-  users[id] = {id, email, password};
-  // console.log(users)
-  // res.cookie('user_id', id)
+  users[id] = {id, email, password: hashPassword};
   req.session.user_id = id
 
   res.redirect("/urls");

@@ -22,3 +22,11 @@ describe('getUserByEmail', function() {
     assert.equal(user, expectedOutput);
   });
 });
+
+describe('getUserByEmail', function() {
+  it('should return null', function() {
+    const user = getUserByEmail("user@example123.com", testUsers)
+    const expectedOutput = null;
+    assert.equal(user, expectedOutput);
+  });
+});

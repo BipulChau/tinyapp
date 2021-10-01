@@ -127,6 +127,11 @@ app.get("/urls/:shortURL", (req, res) => {
     res.render("urls_promptLogin", {user: null});
     return;
   }
+  const filteredURLs = urlsForUser(user_id)
+  const key = Object.keys(filteredURLs);
+  if (!key.includes(req.params.shortURL)){
+    return res.status(401).send("Error!!! No Data")
+  }
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL]["longURL"],
@@ -197,9 +202,9 @@ console.log(urlDatabase)
 
 app.post("/urls/:shortURL", (req, res) => {
   let shortURL = req.params.shortURL;
-  // console.log(shortURL);
+  
   urlDatabase[shortURL]["longURL"]= req.body.longURL;
-  // console.log(urlDatabase);
+  
   res.redirect("/urls");
 });
 
@@ -215,7 +220,7 @@ const password = req.body.password
 
 let userRegistered = getUserByEmail(email, users)
 
-//console.log (userRegistered)
+
 
 if (!userRegistered) {
   res.status(403).send("Emaild ID does not match. Please check your email id!");
@@ -225,7 +230,7 @@ if (!userRegistered) {
 const savedUserhashPassword = users[getUserByEmail(email, users)]["password"]
 
 
-//console.log(savedUserhashPassword, password)
+
 let isPasswordCorrect = bcrypt.compareSync(password, savedUserhashPassword)
 
 console.log("password :", password, "\nhashPW: ", savedUserhashPassword);

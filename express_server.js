@@ -7,10 +7,6 @@ const bcrypt = require('bcryptjs');
 const salt = bcrypt.genSaltSync(10);
 const cookieSession = require('cookie-session')
 
-
-
-
-
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -49,7 +45,7 @@ function generateRandomString() {
 }
 
 // helper function to check if the value exits or not using it's key and if matched returns corresponding userid as well 
-const usersDataExtractor = function (key, value, usersDatabase) {
+const getUserByEmail = function (key, value, usersDatabase) {
   for (let user in usersDatabase){
     let userDetails = (usersDatabase[user]);
     // console.log(userDetails['email'])
@@ -231,9 +227,9 @@ if (!req.body.email || !req.body.password){
 let email = req.body.email;
 let password = req.body.password;
 let hashPassword = hashedPasswordGenerator(password);
-console.log("New user password:", password,"\nhashed password:", hashPassword)
+//console.log("New user password:", password,"\nhashed password:", hashPassword)
 
-let userRegistered = usersDataExtractor("email",email, users).result
+let userRegistered = getUserByEmail("email",email, users).result
 
 // console.log (userRegistered)
 
@@ -285,7 +281,7 @@ const email = req.body.email
 const password = req.body.password
 //const hashPassword = hashedPasswordGenerator(password);
 
-let userRegistered = usersDataExtractor("email", email, users).result
+let userRegistered = getUserByEmail("email", email, users).result
 
 //console.log (userRegistered)
 
@@ -294,7 +290,7 @@ if (!userRegistered) {
   return;
 }
 
-const savedUserhashPassword = users[usersDataExtractor("email", email, users).id]["password"]
+const savedUserhashPassword = users[getUserByEmail("email", email, users).id]["password"]
 console.log(savedUserhashPassword)
 let isPasswordCorrect = bcrypt.compareSync(password, savedUserhashPassword)
 
@@ -306,7 +302,7 @@ if (!isPasswordCorrect) {
   return;
 }
 
-const id = usersDataExtractor("email", email, users).id
+const id = getUserByEmail("email", email, users).id
 //console.log(user_id);
 res.cookie('user_id', id);
 

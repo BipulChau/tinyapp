@@ -5,6 +5,8 @@ const cookieParser = require('cookie-parser');
 const uuid = require('uuid');
 const bcrypt = require('bcryptjs');
 const salt = bcrypt.genSaltSync(10);
+const cookieSession = require('cookie-session')
+
 
 
 
@@ -14,6 +16,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 //activate cookie parser
 app.use(cookieParser())
+app.use(cookieSession({
+  name: "session",
+  keys: ["Kapala Kapala who is kekadaman", "Oggy Poggy"]
+}))
 
 app.set("view engine", "ejs");
 
@@ -142,7 +148,8 @@ app.get("/urls.json", (req, res) => {
 //   res.render("urls_index", templateVars);
 // });
 app.get("/urls", (req, res) => {
-  let user_id = req.cookies["user_id"]
+  //let user_id = req.cookies["user_id"]
+  let user_id = req.session.user_id
   let user = users[user_id];
   if(!user_id){
     res.render("urls_promptLogin", {user: null});
@@ -157,7 +164,7 @@ app.get("/urls", (req, res) => {
 app.post("/urls", (req, res) => {
   //console.log(req.body); // Log the POST request body to the console
   //res.send(generateRandomString());         // Respond with 'Ok' (we will replace this)
-  let user_id = req.cookies["user_id"]
+  let user_id = req.session.user_id
   let userID = user_id // to match key with fresh urlDatabase
   if(!user_id){
     res.redirect("/login")
@@ -172,7 +179,7 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  let user_id = req.cookies["user_id"]
+  let user_id = req.session.user_id
   
   if(!user_id){
     res.redirect("/login")
@@ -185,7 +192,7 @@ app.get("/urls/new", (req, res) => {
 
 //console.log(urlDatabase)
 app.get("/urls/:shortURL", (req, res) => {
-  let user_id = req.cookies["user_id"]
+  let user_id = req.session.user_id
   let user = users[user_id];
   if(!user_id){
     res.render("urls_promptLogin", {user: null});
@@ -238,14 +245,15 @@ if (userRegistered){
   const id = generateRandomString();
   users[id] = {id, email, password};
   // console.log(users)
-  res.cookie('user_id', id)
+  // res.cookie('user_id', id)
+  req.session.user_id = id
 
   res.redirect("/urls");
 });
 //console.log(urlDatabase)
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  let user_id = req.cookies["user_id"]
+  let user_id = req.session.user_id
   // let user = users[user_id];
   if(!user_id){
     res.send("Not authorized to delete");
@@ -307,7 +315,9 @@ res.redirect("/urls");
 
 // logout - post
 app.post("/logout", (req, res) => {  
-  res.clearCookie('user_id')
+  // res.clearCookie('user_id')
+  req.session = null
+
   
   res.redirect("/urls");
 });

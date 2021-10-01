@@ -3,30 +3,19 @@ const salt = bcrypt.genSaltSync(10);
 
 
 // helper function to check if the value exits or not using it's key and if matched returns corresponding userid as well 
-const getUserByEmail = function (key, value, usersDatabase) {
+const getUserByEmail = function (email, usersDatabase) {
   for (let user in usersDatabase){
     let userDetails = (usersDatabase[user]);
     // console.log(userDetails['email'])
-    if(userDetails[key]=== value){
-      let userIDandResult = {id:user, result: true}
-  return userIDandResult;
+    if(userDetails["email"]=== email){
+      //let userIDandResult = {id:user, result: true}
+  return user;
     }
   }
-  let userIDandResult = {result: false}
-  return userIDandResult;
+  
+  return null;
   }
 
-  //Helper function to find urls created by a user
-// const urlsForUser = (id) => {
-//   const filteredURLs = {};
-//   const keys = Object.keys(urlDatabase);
-//   for (let key of keys) {
-//     if(urlDatabase[key]["userID"] === id ){
-//       filteredURLs[key] = urlDatabase[key];
-//     }
-//   }
-//    return filteredURLs;
-// }
 
 //Helper function to generate random id
 function generateRandomString() {

@@ -162,7 +162,7 @@ let password = req.body.password;
 let hashPassword = hashedPasswordGenerator(password);
 //console.log("New user password:", password,"\nhashed password:", hashPassword)
 
-let userRegistered = getUserByEmail("email",email, users).result
+let userRegistered = getUserByEmail(email, users)
 
 // console.log (userRegistered)
 
@@ -213,7 +213,7 @@ app.post("/login", (req, res) => {
 const email = req.body.email
 const password = req.body.password
 
-let userRegistered = getUserByEmail("email", email, users).result
+let userRegistered = getUserByEmail(email, users)
 
 //console.log (userRegistered)
 
@@ -222,7 +222,9 @@ if (!userRegistered) {
   return;
 }
 
-const savedUserhashPassword = users[getUserByEmail("email", email, users).id]["password"]
+const savedUserhashPassword = users[getUserByEmail(email, users)]["password"]
+
+
 //console.log(savedUserhashPassword, password)
 let isPasswordCorrect = bcrypt.compareSync(password, savedUserhashPassword)
 
@@ -234,9 +236,8 @@ if (!isPasswordCorrect) {
   return;
 }
 
-const id = getUserByEmail("email", email, users).id
-//console.log(user_id);
-//res.cookie('user_id', id);
+const id = getUserByEmail(email, users)
+
 req.session.user_id = id
 
 res.redirect("/urls");

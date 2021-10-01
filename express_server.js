@@ -6,6 +6,12 @@ const uuid = require('uuid');
 const bcrypt = require('bcryptjs');
 const salt = bcrypt.genSaltSync(10);
 const cookieSession = require('cookie-session')
+const {
+    getUserByEmail,
+    generateRandomString,
+    dataBaseGenerator,
+    hashedPasswordGenerator
+  }= require('./helpers')
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -32,65 +38,6 @@ const urlsForUser = (id) => {
   }
    return filteredURLs;
 }
-
-//Helper function to generate random id
-function generateRandomString() {
-  const strings = "abcdefghijklmnopqrstuvwxyz0123456789";
-  let randomString = "";
-  for (let i = 0; i < 6; i++) {
-    let randomIndex = Math.floor(Math.random() * strings.length);
-    randomString += strings[randomIndex];
-  }
-  return randomString;
-}
-
-// helper function to check if the value exits or not using it's key and if matched returns corresponding userid as well 
-const getUserByEmail = function (key, value, usersDatabase) {
-  for (let user in usersDatabase){
-    let userDetails = (usersDatabase[user]);
-    // console.log(userDetails['email'])
-    if(userDetails[key]=== value){
-      let userIDandResult = {id:user, result: true}
-  return userIDandResult;
-    }
-  }
-  let userIDandResult = {result: false}
-  return userIDandResult;
-  }
-
-  // Helper function which generates database of individual user based on key, value(used_id) and database
-const dataBaseGenerator = function(key,value, database) {
-  let userDatabase ={}
-  for (let i in database){
-  if(database[i][key] === value){
-      
-      userDatabase[i] = database[i];
-      return userDatabase
-
-    }
-  }
-  }
-
-  //Helper function to generate hashed password
-
-  let hashedPasswordGenerator = function (password) {
-    const hashedPassword = bcrypt.hashSync(password, salt);
-    return hashedPassword;
-  }
-
-
-  //Helper function to check if password and hashed password are the SAME
-  let hashedPasswordChecker = function(password, hashedPassword) {
-    return(bcrypt.compareSync(password, hashedPassword));
-  }
-  
-
-  
-// old global urls Database
-// const urlDatabase = {
-//   b2xVn2: "http://www.lighthouselabs.ca",
-//   "9sm5xK": "http://www.google.com",
-// };
 
 //fresh global urls Database
 const urlDatabase = {
@@ -119,7 +66,7 @@ const users = {
   }
 }
 
-console.log("hashed password: ", users)
+//console.log("hashed password: ", users)
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -129,20 +76,6 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-// app.get("/urls", (req, res) => {
-//   // read the user id from the cookies
-//   const userId = req.cookies['user_id'];
-//   // retrieve the user object from users db
-//   if(!userId) {
-//     res.status(401).send("You must <a href='/login'>Login</a> first");
-//     return
-//   }
-//   //userdatabase needs to pass if it is moved to helper file.
-//   const updatedURLs = urlsForUser(userId);
-//   const currentUser = users[userId];
-//   const templateVars = { urls: updatedURLs, user: currentUser };
-//   res.render("urls_index", templateVars);
-// });
 app.get("/urls", (req, res) => {
   //let user_id = req.cookies["user_id"]
   let user_id = req.session.user_id
@@ -279,7 +212,6 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {  
 const email = req.body.email
 const password = req.body.password
-//const hashPassword = hashedPasswordGenerator(password);
 
 let userRegistered = getUserByEmail("email", email, users).result
 
@@ -291,7 +223,7 @@ if (!userRegistered) {
 }
 
 const savedUserhashPassword = users[getUserByEmail("email", email, users).id]["password"]
-console.log(savedUserhashPassword)
+//console.log(savedUserhashPassword, password)
 let isPasswordCorrect = bcrypt.compareSync(password, savedUserhashPassword)
 
 console.log("password :", password, "\nhashPW: ", savedUserhashPassword);
@@ -304,7 +236,8 @@ if (!isPasswordCorrect) {
 
 const id = getUserByEmail("email", email, users).id
 //console.log(user_id);
-res.cookie('user_id', id);
+//res.cookie('user_id', id);
+req.session.user_id = id
 
 res.redirect("/urls");
 });

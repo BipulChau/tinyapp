@@ -129,7 +129,7 @@ app.get("/urls/:shortURL", (req, res) => {
   const filteredURLs = urlsForUser(user_id);
   const key = Object.keys(filteredURLs);
   if (!key.includes(req.params.shortURL)) {
-    return res.status(401).send("Error!!! No Data");
+    return res.status(401).send("Access Denied!!! Requested urls does not belong to you."); // functional improvement as per feedback
   }
   const templateVars = {
     shortURL: req.params.shortURL,

@@ -69,7 +69,14 @@ const users = {
 
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  //res.send("Hello!");
+  let user_id = req.session.user_id;
+  let user = users[user_id];
+  if (!user_id) {
+    res.redirect("/login"); // from the feedback about function requirement
+    return;
+  }
+  res.redirect("/urls");
 });
 
 app.get("/urls.json", (req, res) => {
@@ -96,6 +103,7 @@ app.post("/urls", (req, res) => {
   let userID = user_id; // to match key with fresh urlDatabase
   if (!user_id) {
     res.redirect("/login");
+    //return res.status(401).send("Access Denied!!! Requested urls does not belong to you.");
     return;
   }
   let longURL = req.body.longURL;

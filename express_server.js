@@ -15,16 +15,12 @@ const {
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
-
-
 app.use(cookieParser());
 app.use(cookieSession({
   name: "session",
   keys: ["Kapala Kapala who is kekadaman", "Oggy Poggy"]
 }));
-
 app.set("view engine", "ejs");
-
 const PORT = 8080;
 
 //Helper function to find urls created by a user
@@ -52,7 +48,6 @@ const urlDatabase = {
 };
 
 // users Database
-
 const users = {
   "userRandomID": {
     id: "userRandomID",
@@ -66,14 +61,11 @@ const users = {
   }
 };
 
-
-
 app.get("/", (req, res) => {
-  //res.send("Hello!");
   let user_id = req.session.user_id;
   let user = users[user_id];
   if (!user_id) {
-    res.redirect("/login"); // from the feedback about function requirement
+    res.redirect("/login");
     return;
   }
   res.redirect("/urls");
@@ -84,39 +76,32 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  
   let user_id = req.session.user_id;
   let user = users[user_id];
   if (!user_id) {
-    res.redirect("/login"); // from the feedback about function requirement
+    res.redirect("/login");
     return;
   }
-
   let userURL = urlsForUser(user_id);
   const templateVars = { urls: userURL, user };
   res.render("urls_index", templateVars);
 });
 
 app.post("/urls", (req, res) => {
-  
   let user_id = req.session.user_id;
   let userID = user_id; // to match key with fresh urlDatabase
   if (!user_id) {
-    res.redirect("/login");
-    //return res.status(401).send("Access Denied!!! Requested urls does not belong to you.");
+    res.status(403).send("You have to log in first to create new URL");
     return;
   }
   let longURL = req.body.longURL;
-  //let user = users[user_id];
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = {longURL, userID};  // adding new shorturl and corresponding longURL and userID as per fresh urlDatabase structure
-  //res.send(urlDatabase);
   res.redirect(`/urls/${shortURL}`);
 });
 
 app.get("/urls/new", (req, res) => {
   let user_id = req.session.user_id;
-  
   if (!user_id) {
     res.redirect("/login");
     return;
@@ -125,7 +110,6 @@ app.get("/urls/new", (req, res) => {
   const templateVars = {user};
   res.render("urls_new", templateVars);
 });
-
 
 app.get("/urls/:shortURL", (req, res) => {
   let user_id = req.session.user_id;
@@ -149,7 +133,6 @@ app.get("/urls/:shortURL", (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => {
   if (!urlDatabase[req.params.shortURL]) {
-    
     res.status(400).send("Error!!! Please check shortURL");
     return;
   }
@@ -158,107 +141,88 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  
   res.render("urls_register", {user: null});
 });
 
 app.post("/register", (req, res) => {
-  
   if (!req.body.email || !req.body.password) {
     res.status(400).send("Please fill both email and password!!!");
     return;
   }
-
   let email = req.body.email;
   let password = req.body.password;
   let hashPassword = hashedPasswordGenerator(password);
-
-
   let userRegistered = getUserByEmail(email, users);
-
-
-
   if (userRegistered) {
     res.status(400).send("Already registered with this email id");
     return;
   }
-
   const id = generateRandomString();
   users[id] = {id, email, password: hashPassword};
   req.session.user_id = id;
-
   res.redirect("/urls");
 });
 
-
 app.post("/urls/:shortURL/delete", (req, res) => {
   let user_id = req.session.user_id;
-  
   if (!user_id) {
     res.send("Not authorized to delete");
     return;
+  }
+  const filteredURLs = urlsForUser(user_id);
+  const key = Object.keys(filteredURLs);
+  if (!key.includes(req.params.shortURL)) {
+    return res.status(401).send("Access Denied!!! Requested urls does not belong to you."); // functional improvement as per feedback
   }
   let shortURL = req.params.shortURL;
   delete urlDatabase[shortURL];
   res.redirect("/urls");
 });
-console.log(urlDatabase);
-
 
 app.post("/urls/:shortURL", (req, res) => {
   let shortURL = req.params.shortURL;
+  let user_id = req.session.user_id;
   
+  if (!user_id) {
+    res.status(403).send("Please log in first to edit shortURL");
+    return;
+  }
+  const filteredURLs = urlsForUser(user_id);
+  const key = Object.keys(filteredURLs);
+  if (!key.includes(req.params.shortURL)) {
+    return res.status(401).send("Access Denied!!! Requested urls does not belong to you."); // functional improvement as per feedback
+  }
   urlDatabase[shortURL]["longURL"] = req.body.longURL;
-  
   res.redirect("/urls");
 });
 
 app.get("/login", (req, res) => {
-
   res.render("urls_login", {user:null});
 });
-
 
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-
   let userRegistered = getUserByEmail(email, users);
-
-
 
   if (!userRegistered) {
     res.status(403).send("Emaild ID does not match. Please check your email id!");
     return;
   }
-
   const savedUserhashPassword = users[getUserByEmail(email, users)]["password"];
-
-
-
   let isPasswordCorrect = bcrypt.compareSync(password, savedUserhashPassword);
-
-  console.log("password :", password, "\nhashPW: ", savedUserhashPassword);
-
 
   if (!isPasswordCorrect) {
     res.status(403).send("Password does not match!!!");
     return;
   }
-
   const id = getUserByEmail(email, users);
-
   req.session.user_id = id;
-
   res.redirect("/urls");
 });
 
-
 app.post("/logout", (req, res) => {
-  
   req.session = null;
-
-  
   res.redirect("/urls");
 });
 

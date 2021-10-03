@@ -81,7 +81,7 @@ app.get("/urls", (req, res) => {
   let user_id = req.session.user_id;
   let user = users[user_id];
   if (!user_id) {
-    res.render("urls_promptLogin", {user: null});
+    res.redirect("/login"); // from the feedback about function requirement
     return;
   }
 
